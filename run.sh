@@ -9,7 +9,7 @@ docker_volume_data=/data
 docker_port1=9999
 local_docker_port1=9999
 
-version=1.0.0
+version=
 
 ##################################################
 #### ---- Mostly, you don't need change below ----
@@ -23,6 +23,11 @@ echo "  ${0} openkbs/${PACKAGE} 1.0.0"
 # Reference: https://docs.docker.com/engine/userguide/containers/dockerimages/
 imageTag=${1:-openkbs/${PACKAGE}}
 version=${2:-${version}}
+if [ "$version" == "" ]; then
+    imageTagString=$imageTag
+else
+    imageTagString=${imageTag}:${version}
+fi
 
 #instanceName=my-${2:-${imageTag%/*}}_$RANDOM
 instanceName=my-${2:-${imageTag##*/}}
@@ -43,7 +48,7 @@ docker run \
     --name=${instanceName} \
     --publish ${local_docker_port1}:${docker_port1} \
     --volume=${local_docker_data}:${docker_volume_data} \
-    ${imageTag}:${version} 
+    ${imageTagString} 
     
 
 if [ ! "$version" == "" ]; then
