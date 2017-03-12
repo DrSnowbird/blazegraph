@@ -19,6 +19,8 @@ echo "Usage: "
 echo "  ${0} [<repo-name/repo-tag>] [<repo-version>]"
 echo "e.g."
 echo "  ${0} openkbs/${PACKAGE} 1.0.0"
+echo "or"
+echo "  ${0} openkbs/${PACKAGE}"
 
 # Reference: https://docs.docker.com/engine/userguide/containers/dockerimages/
 imageTag=${1:-openkbs/${PACKAGE}}
@@ -52,11 +54,11 @@ docker run \
     
 
 if [ ! "$version" == "" ]; then
-    #docker run --rm -P -d -t --name ${instanceName} -v ${docker_data}:${docker_volume_data} ${imageTag}:${version}
-    echo "docker run --rm -P -d --name ${instanceName} -v ${docker_data}:${docker_volume_data} ${imageTag}:${version}"
+    #docker run --rm -P -d -t --name ${instanceName} -v ${local_docker_data}:${docker_volume_data} ${imageTag}:${version}
+    echo "docker run --rm -P -d --name ${instanceName} -v ${local_docker_data}:${docker_volume_data} ${imageTag}:${version}"
 else
-    #docker run --rm -P -d -t --name ${instanceName} -v ${docker_data}:${docker_volume_data} ${imageTag}
-    echo "docker run --rm -P -d --name ${instanceName} -v ${docker_data}:${docker_volume_data} ${imageTag}"
+    #docker run --rm -P -d -t --name ${instanceName} -v ${local_docker_data}:${docker_volume_data} ${imageTag}
+    echo "docker run --rm -P -d --name ${instanceName} -v ${local_docker_data}:${docker_volume_data} ${imageTag}"
 fi
 
 echo ">>> Docker Status"
