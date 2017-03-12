@@ -38,6 +38,8 @@ instanceName=my-${2:-${imageTag##*/}}
 local_docker_data=~/docker-data/${PACKAGE}/data
 mkdir -p ${local_docker_data}
 
+MY_IP=`ip route get 1|awk '{print $NF;exit;}'`
+
 #### ----- RUN -------
 echo "To run: for example"
 echo "docker run -d --name my-${imageTag##*/} -v ${docker_data}:/${docker_volume_data} ${imageTag}"
@@ -60,6 +62,9 @@ else
     #docker run --rm -P -d -t --name ${instanceName} -v ${local_docker_data}:${docker_volume_data} ${imageTag}
     echo "docker run --rm -P -d --name ${instanceName} -v ${local_docker_data}:${docker_volume_data} ${imageTag}"
 fi
+
+echo "Web UI: http://${MY_IP}:${local_docker_port1}/"
+echo "SPARQL UI: http://${MY_IP}:${local_docker_port1}/bigdata"
 
 echo ">>> Docker Status"
 docker ps -a | grep "${instanceName}"
