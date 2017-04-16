@@ -7,8 +7,6 @@ ENV SERVERS_HOME=/usr
 ENV DATA_DIR /data
 VOLUME $DATA_DIR
 
-ENV BLAZEGRAPH_HOME $SERVERS_HOME/blazegraph
-
 ################################
 #### ---- BlazeGraph Server ----
 ################################
@@ -16,19 +14,18 @@ ENV BLAZEGRAPH_HOME $SERVERS_HOME/blazegraph
 ENV BLAZEGRAPH_URL https://sourceforge.net/projects/bigdata/files/bigdata/2.1.4/blazegraph.jar
 
 ## (blazegraph option) -v $PWD/config:/config
-ENV CONFIG_DIR ${BLAZEGRAPH_HOME}/config
-VOLUME $CONFIG_DIR
+ENV CONFIG_DIR /config
 
 ## (blazegraph option): -Dbigdata.propertyFile=/etc/blazegraph/RWStore.properties 
-ENV BIGDATA_PROPERTY ${BLAZEGRAPH_HOME}/config/RWStore.properties
-COPY RWStore.properties ${BLAZEGRAPH_HOME}/config/RWStore.properties
+ENV BIGDATA_PROPERTY /config/RWStore.properties
 
 ## (blazegraph option): -Djetty.overrideWebXml=/path/to/override.xml
-ENV JETTY_OVERRIDEWEBXML ${BLAZEGRAPH_HOME}/config/web.xml
+ENV JETTY_OVERRIDEWEBXML /config/web.xml
+
+ENV BLAZEGRAPH_HOME $SERVERS_HOME/blazegraph
 
 RUN set -x \
-    && mkdir -p $BLAZEGRAPH_HOME \
-    && mkdir -p ${BLAZEGRAPH_HOME}/config
+    && mkdir -p $BLAZEGRAPH_HOME 
 
 EXPOSE 9999
     
