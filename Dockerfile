@@ -1,4 +1,4 @@
-FROM openkbs/jre-mvn-py
+FROM openkbs/jre-mvn-py3
 
 MAINTAINER OpenKBS 
 
