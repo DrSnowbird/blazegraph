@@ -41,11 +41,11 @@ fi
 instanceName=my-${2:-${imageTag##*/}}
 
 #### ---- instance local data on the host ----
-local_docker_data=${local_dir}/docker-data/${PACKAGE}/data
+local_docker_data=${local_dir}/data-docker/${PACKAGE}/data
 mkdir -p ${local_docker_data}
 
 #### ---- instance's local config on the host ---
-local_docker_config=${local_dir}/docker-data/${PACKAGE}/config
+local_docker_config=${local_dir}/data-docker/${PACKAGE}/config
 mkdir -p ${local_docker_config}
 
 MY_IP=`ip route get 1|awk '{print $NF;exit;}'`
