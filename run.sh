@@ -1,89 +1,84 @@
 #!/bin/bash -x
 
+if [ $# -lt 1 ]; then
+    echo "Usage: "
+    echo "  ${0} [<repo-name/repo-tag>] "
+    echo "e.g."
+    echo "  ${0} openkbs/blazegraph"
+fi
+
+## -- mostly, don't change this --
+MY_IP=`ip route get 1|awk '{print$NF;exit;}'`
+
+function displayPortainerURL() {
+    port=${1}
+    echo "... Go to: http://${MY_IP}:${port}"
+    #firefox http://${MY_IP}:${port} &
+    if [ "`which google-chrome`" != "" ]; then
+        /usr/bin/google-chrome http://${MY_IP}:${port} &
+    else
+        firefox http://${MY_IP}:${port} &
+    fi
+}
+
 ##################################################
 #### ---- Mandatory: Change those ----
 ##################################################
+baseDataFolder=~/data-docker
+imageTag=${1:-"openkbs/blazegraph"}
 
 PACKAGE=blazegraph
-BLAZEGRAPH_HOME=/usr/blazegraph
+BLAZEGRAPH_HOME=/usr/${PACKAGE}
 
-docker_volume_data=/data
-docker_volume_config=/config
+## -- Don't change this --
+PACKAGE=`echo ${imageTag##*/}|tr "/\-: " "_"`
 
+## -- Volume mapping --
+docker_volume_data1=/data
+docker_volume_data2=${BLAZEGRAPH_HOME}/config
+local_docker_data1=${baseDataFolder}/${PACKAGE}/data
+local_docker_data2=${baseDataFolder}/${PACKAGE}/config
+## -- local data folders on the host --
+mkdir -p ${local_docker_data1}
+mkdir -p ${local_docker_data2}
+
+#### ---- ports mapping ----
 docker_port1=9999
 local_docker_port1=9999
-
-local_dir=/mnt/data
-
-version=
 
 ##################################################
 #### ---- Mostly, you don't need change below ----
 ##################################################
-
-echo "Usage: "
-echo "  ${0} [<repo-name/repo-tag>] [<repo-version>]"
-echo "e.g."
-echo "  ${0} openkbs/${PACKAGE} 1.0.0"
-echo "or"
-echo "  ${0} openkbs/${PACKAGE}"
-
-# Reference: https://docs.docker.com/engine/userguide/containers/dockerimages/
-imageTag=${1:-openkbs/${PACKAGE}}
-version=${2:-${version}}
-if [ "$version" == "" ]; then
-    imageTagString=$imageTag
-else
-    imageTagString=${imageTag}:${version}
-fi
+## -- mostly, don't change this --
 
 #instanceName=my-${2:-${imageTag%/*}}_$RANDOM
-instanceName=my-${2:-${imageTag##*/}}
-
-#### ---- instance local data on the host ----
-local_docker_data=${local_dir}/docker-data/${PACKAGE}/data
-mkdir -p ${local_docker_data}
-
-#### ---- instance's local config on the host ---
-local_docker_config=${local_dir}/docker-data/${PACKAGE}/config
-mkdir -p ${local_docker_config}
-
-MY_IP=`ip route get 1|awk '{print $NF;exit;}'`
+#instanceName=my-${2:-${imageTag##*/}}
+instanceName=`echo ${imageTag}|tr "/\-: " "_"`
 
 #### ----- RUN -------
-echo "To run: for example"
-echo "docker run -d --name my-${imageTag##*/} -p ${local_docker_port1}:${docker_port1} -v ${local_docker_data}:${docker_volume_data} -v ${local_docker_config}:${docker_volume_config} ${imageTag}"
+# docker logs -f ${instanceName} &
+
 echo "---------------------------------------------"
 echo "---- Starting a Container for ${imageTag}"
 echo "---------------------------------------------"
-#docker run --rm -P -d --name $instanceName $imageTag
-docker run \
-    --detach \
+
+set -x
+docker run --rm \
+    -d \
     --name=${instanceName} \
-    --publish ${local_docker_port1}:${docker_port1} \
-    --volume=${local_docker_data}:${docker_volume_data} \
-    --volume=${local_docker_config}:${docker_volume_config} \
-    ${imageTagString} 
-    
-# docker logs -f ${instanceName} &
-
-if [ ! "$version" == "" ]; then
-    #docker run --rm -P -d -t --name ${instanceName} -v ${local_docker_data}:${docker_volume_data} ${imageTag}:${version}
-    echo "docker run --rm -P -d --name ${instanceName} -v ${local_docker_data}:${docker_volume_data} -v ${local_docker_config}:${docker_volume_config} ${imageTag}:${version}"
-else
-    #docker run --rm -P -d -t --name ${instanceName} -v ${local_docker_data}:${docker_volume_data} ${imageTag}
-    echo "docker run --rm -P -d --name ${instanceName} -v ${local_docker_data}:${docker_volume_data} -v ${local_docker_config}:${docker_volume_config} ${imageTag}"
-fi
-
-echo "Web UI: http://${MY_IP}:${local_docker_port1}/"
-echo "SPARQL UI: http://${MY_IP}:${local_docker_port1}/bigdata"
+    -e PASSWORD="${Password}" \
+    -p ${local_docker_port1}:${docker_port1} \
+    -v ${local_docker_data1}:${docker_volume_data1} \
+    -v ${local_docker_data2}:${docker_volume_data2} \
+    ${imageTag}
+set +x
 
 echo ">>> Docker Status"
 docker ps -a | grep "${instanceName}"
 echo "-----------------------------------------------"
 echo ">>> Docker Shell into Container `docker ps -lqa`"
+echo "docker exec -it ${instanceName} /bin/bash"
 
-
- 
-#docker exec -it ${instanceName} /bin/bash
+#### ---- Display IP:Port URL ----
+displayPortainerURL ${local_docker_port1}
 

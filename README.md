@@ -1,13 +1,10 @@
-
+# BlazeGraph 2.1.4 + Java 8 (1.8.0_131) JRE server + Maven 3.5.0 + Python 3.5.2
 [![](https://imagelayers.io/badge/openkbs/blazegraph:1.0.0.svg)](https://imagelayers.io/?images=openkbs/blazegraph:1.0.0 'Get your own badge on imagelayers.io')
 
-Components:
+## Components:
 
 * BlazeGraph 2.1.4 service at http://<server_ip:9999>/
-
-* Oracle Java "1.8.0_112" JRE Runtime Environment for Server
-* Apache Maven 3.3.9
-* Python 2.7.11
+* Java 8 (1.8.0_131) JRE server + Maven 3.5.0 + Python 3.5.2
 * Other tools: git wget unzip vim python python-setuptools python-dev python-numpy 
 
 ## Pull the image from Docker Repository
