@@ -59,6 +59,7 @@ CMD java -server -Xmx4g -jar ${BLAZEGRAPH_HOME}/blazegraph.jar
 ################################
 #### ---- Entrypoint ----
 ################################
+USER ${USER_ID}
 WORKDIR ${DATA_DIR}
 #ENTRYPOINT ["/bin/bash"] 
 
