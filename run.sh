@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 if [ $# -lt 1 ]; then
     echo "Usage: "
@@ -63,10 +63,9 @@ echo "---- Starting a Container for ${imageTag}"
 echo "---------------------------------------------"
 
 set -x
-docker run --rm \
+docker run \
     -d \
     --name=${instanceName} \
-    -e PASSWORD="${Password}" \
     -p ${local_docker_port1}:${docker_port1} \
     -v ${local_docker_data1}:${docker_volume_data1} \
     -v ${local_docker_data2}:${docker_volume_data2} \
