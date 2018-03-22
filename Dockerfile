@@ -1,4 +1,4 @@
-FROM openkbs/jre-mvn-py3
+FROM openkbs/jdk-mvn-py3
 
 MAINTAINER OpenKBS <DrSnowbird@openkbs.org>
 
@@ -19,6 +19,7 @@ ENV BLAZEGRAPH_PORT=${BLAZEGRAPH_PORT}
 ################################
 ## -- ref: https://sourceforge.net/projects/bigdata/files
 ENV BLAZEGRAPH_URL=https://sourceforge.net/projects/bigdata/files/bigdata/${BLAZEGRAPH_VERSION}/blazegraph.jar
+
 
 ## (blazegraph option) -v $PWD/config:/config
 ENV CONFIG_DIR=${BLAZEGRAPH_HOME}/config
