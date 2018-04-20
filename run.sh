@@ -1,16 +1,195 @@
-#!/bin/bash -x
+#!/bin/bash
+
+MY_DIR=$(dirname "$(readlink -f "$0")")
 
 if [ $# -lt 1 ]; then
     echo "Usage: "
-    echo "  ${0} [<repo-name/repo-tag>] "
-    echo "e.g."
-    echo "  ${0} openkbs/blazegraph"
+    echo "  ${0} <container_shell_command>"
+    echo "e.g.: "
+    echo "  ${0} ls -al "
 fi
 
-## -- mostly, don't change this --
-MY_IP=`ip route get 1|awk '{print$NF;exit;}'`
+###################################################
+#### ---- Change this only to use your own ----
+###################################################
+ORGANIZATION=openkbs
+baseDataFolder="$HOME/data-docker"
 
-function displayPortainerURL() {
+###################################################
+#### **** Container package information ****
+###################################################
+MY_IP=`ip route get 1|awk '{print$NF;exit;}'`
+DOCKER_IMAGE_REPO=`echo $(basename $PWD)|tr '[:upper:]' '[:lower:]'|tr "/: " "_" `
+imageTag="${ORGANIZATION}/${DOCKER_IMAGE_REPO}"
+#PACKAGE=`echo ${imageTag##*/}|tr "/\-: " "_"`
+PACKAGE="${imageTag##*/}"
+
+###################################################
+#### ---- (DEPRECATED but still supported)    -----
+#### ---- Volumes to be mapped (change this!) -----
+###################################################
+# (examples)
+# IDEA_PRODUCT_NAME="IdeaIC2017"
+# IDEA_PRODUCT_VERSION="3"
+# IDEA_INSTALL_DIR="${IDEA_PRODUCT_NAME}.${IDEA_PRODUCT_VERSION}"
+# IDEA_CONFIG_DIR=".${IDEA_PRODUCT_NAME}.${IDEA_PRODUCT_VERSION}"
+# IDEA_PROJECT_DIR="IdeaProjects"
+# VOLUMES_LIST="${IDEA_CONFIG_DIR} ${IDEA_PROJECT_DIR}"
+
+# ---------------------------
+# Variable: VOLUMES_LIST
+# (NEW: use docker.env with "#VOLUMES_LIST=data workspace" to define entries)
+# ---------------------------
+## -- If you defined locally here, 
+##    then the definitions of volumes map in "docker.env" will be ignored.
+# VOLUMES_LIST="data workspace"
+
+# ---------------------------
+# OPTIONAL Variable: PORT PAIR
+# (NEW: use docker.env with "#PORTS=18000:8000 17200:7200" to define entries)
+# ---------------------------
+## -- If you defined locally here, 
+##    then the definitions of ports map in "docker.env" will be ignored.
+#### Input: PORT - list of PORT to be mapped
+# (examples)
+#PORTS_LIST="18000:8000"
+#PORTS_LIST=
+
+#########################################################################################################
+######################## DON'T CHANGE LINES STARTING BELOW (unless you need to) #########################
+#########################################################################################################
+LOCAL_VOLUME_DIR="${baseDataFolder}/${PACKAGE}"
+## -- Container's internal Volume base DIR
+DOCKER_VOLUME_DIR="/home/developer"
+
+###################################################
+#### ---- Function: Generate volume mappings  ----
+####      (Don't change!)
+###################################################
+VOLUME_MAP=""
+#### Input: VOLUMES - list of volumes to be mapped
+hasPattern=0
+function hasPattern() {
+    detect=`echo $1|grep "$2"`
+    if [ "${detect}" != "" ]; then
+        hasPattern=1
+    else
+        hasPattern=0
+    fi
+}
+
+function generateVolumeMapping() {
+    if [ "$VOLUMES_LIST" == "" ]; then
+        ## -- If locally defined in this file, then respect that first.
+        ## -- Otherwise, go lookup the docker.env as ride-along source for volume definitions
+        VOLUMES_LIST=`cat docker.env|grep "^#VOLUMES_LIST= *"|sed "s/[#\"]//g"|cut -d'=' -f2-`
+    fi
+    for vol in $VOLUMES_LIST; do
+        echo "$vol"
+        hasColon=`echo $vol|grep ":"`
+        ## -- allowing change local volume directories --
+        if [ "$hasColon" != "" ]; then
+            left=`echo $vol|cut -d':' -f1`
+            right=`echo $vol|cut -d':' -f2`
+            leftHasDot=`echo $left|grep "\./"`
+            if [ "$leftHasDot" != "" ]; then
+                ## has "./data" on the left
+                if [[ ${right} == "/"* ]]; then
+                    ## -- pattern like: "./data:/containerPath/data"
+                    echo "-- pattern like ./data:/data --"
+                    VOLUME_MAP="${VOLUME_MAP} -v `pwd`/${left}:${right}"
+                else
+                    ## -- pattern like: "./data:data"
+                    echo "-- pattern like ./data:data --"
+                    VOLUME_MAP="${VOLUME_MAP} -v `pwd`/${left}:${DOCKER_VOLUME_DIR}/${right}"
+                fi
+                mkdir -p `pwd`/${left}
+                ls -al `pwd`/${left}
+            else
+                ## No "./data" on the left
+                if [[ ${right} == "/"* ]]; then
+                    ## -- pattern like: "data:/containerPath/data"
+                    echo "-- pattern like ./data:/data --"
+                    VOLUME_MAP="${VOLUME_MAP} -v ${LOCAL_VOLUME_DIR}/${left}:${right}"
+                else
+                    ## -- pattern like: "data:data"
+                    echo "-- pattern like data:data --"
+                    VOLUME_MAP="${VOLUME_MAP} -v ${LOCAL_VOLUME_DIR}/${left}:${DOCKER_VOLUME_DIR}/${right}"
+                fi
+                mkdir -p ${LOCAL_VOLUME_DIR}/${left}
+                ls -al ${LOCAL_VOLUME_DIR}/${left}
+            fi
+        else
+            ## -- pattern like: "data"
+            echo "-- default sub-directory (without prefix absolute path) --"
+            VOLUME_MAP="${VOLUME_MAP} -v ${LOCAL_VOLUME_DIR}/$vol:${DOCKER_VOLUME_DIR}/$vol"
+            mkdir -p ${LOCAL_VOLUME_DIR}/$vol
+            ls -al ${LOCAL_VOLUME_DIR}/$vol
+        fi
+    done
+}
+#### ---- Generate Volumes Mapping ----
+generateVolumeMapping
+echo ${VOLUME_MAP}
+
+###################################################
+#### ---- Function: Generate port mappings  ----
+####      (Don't change!)
+###################################################
+PORT_MAP=""
+function generatePortMapping() {
+    if [ "$PORTS" == "" ]; then
+        ## -- If locally defined in this file, then respect that first.
+        ## -- Otherwise, go lookup the docker.env as ride-along source for volume definitions
+        PORTS_LIST=`cat docker.env|grep "^#PORTS_LIST= *"|sed "s/[#\"]//g"|cut -d'=' -f2-`
+    fi
+    for pp in ${PORTS_LIST}; do
+        #echo "$pp"
+        port_pair=`echo $pp |  tr -d ' ' `
+        if [ ! "$port_pair" == "" ]; then
+            # -p ${local_dockerPort1}:${dockerPort1} 
+            host_port=`echo $port_pair | tr -d ' ' | cut -d':' -f1`
+            docker_port=`echo $port_pair | tr -d ' ' | cut -d':' -f2`
+            PORT_MAP="${PORT_MAP} -p ${host_port}:${docker_port}"
+        fi
+    done
+}
+#### ---- Generate Port Mapping ----
+generatePortMapping
+echo ${PORT_MAP}
+
+###################################################
+#### ---- Function: Generate privilege String  ----
+####      (Don't change!)
+###################################################
+privilegedString=""
+function generatePrivilegedString() {
+    OS_VER=`which yum`
+    if [ "$OS_VER" == "" ]; then
+        # Ubuntu
+        echo "Ubuntu ... not SE-Lunix ... no privileged needed"
+    else
+        # CentOS/RHEL
+        privilegedString="--privileged"
+    fi
+}
+generatePrivilegedString
+echo ${privilegedString}
+
+###################################################
+#### ---- Mostly, you don't need change below ----
+###################################################
+function cleanup() {
+    if [ ! "`docker ps -a|grep ${instanceName}`" == "" ]; then
+         docker rm -f ${instanceName}
+    fi
+}
+
+## -- transform '-' and space to '_' 
+#instanceName=`echo $(basename ${imageTag})|tr '[:upper:]' '[:lower:]'|tr "/\-: " "_"`
+instanceName=`echo $(basename ${imageTag})|tr '[:upper:]' '[:lower:]'|tr "/: " "_"`
+
+function displayURL() {
     port=${1}
     echo "... Go to: http://${MY_IP}:${port}"
     #firefox http://${MY_IP}:${port} &
@@ -21,57 +200,23 @@ function displayPortainerURL() {
     fi
 }
 
-##################################################
-#### ---- Mandatory: Change those ----
-##################################################
-baseDataFolder=~/data-docker
-imageTag=${1:-"openkbs/blazegraph"}
-
-PACKAGE=blazegraph
-BLAZEGRAPH_HOME=/usr/${PACKAGE}
-
-## -- Don't change this --
-PACKAGE=`echo ${imageTag##*/}|tr "/\-: " "_"`
-
-## -- Volume mapping --
-docker_volume_data1=/data
-docker_volume_data2=${BLAZEGRAPH_HOME}/config
-local_docker_data1=${baseDataFolder}/${PACKAGE}/data
-local_docker_data2=${baseDataFolder}/${PACKAGE}/config
-## -- local data folders on the host --
-mkdir -p ${local_docker_data1}
-mkdir -p ${local_docker_data2}
-
-#### ---- ports mapping ----
-docker_port1=9999
-local_docker_port1=9999
-
-##################################################
-#### ---- Mostly, you don't need change below ----
-##################################################
-## -- mostly, don't change this --
-
-#instanceName=my-${2:-${imageTag%/*}}_$RANDOM
-#instanceName=my-${2:-${imageTag##*/}}
-instanceName=`echo ${imageTag}|tr "/\-: " "_"`
-
-#### ----- RUN -------
-# docker logs -f ${instanceName} &
-
 echo "---------------------------------------------"
 echo "---- Starting a Container for ${imageTag}"
 echo "---------------------------------------------"
+
+cleanup
 
 set -x
 docker run --rm \
     -d \
     --name=${instanceName} \
-    -e PASSWORD="${Password}" \
-    -p ${local_docker_port1}:${docker_port1} \
-    -v ${local_docker_data1}:${docker_volume_data1} \
-    -v ${local_docker_data2}:${docker_volume_data2} \
-    ${imageTag}
+    ${privilegedString} \
+    ${VOLUME_MAP} \
+    ${PORT_MAP} \
+    ${imageTag} $*
 set +x
+
+docker logs -f ${instanceName} &
 
 echo ">>> Docker Status"
 docker ps -a | grep "${instanceName}"
@@ -80,5 +225,6 @@ echo ">>> Docker Shell into Container `docker ps -lqa`"
 echo "docker exec -it ${instanceName} /bin/bash"
 
 #### ---- Display IP:Port URL ----
-displayPortainerURL ${local_docker_port1}
+displayURL $(cat docker.env | grep BLAZEGRAPH_PORT | cut -d'=' -f 2) 
+
 

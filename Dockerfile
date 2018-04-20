@@ -1,18 +1,20 @@
-FROM openkbs/jre-mvn-py3
+FROM openkbs/jdk-mvn-py3
 
 MAINTAINER OpenKBS <DrSnowbird@openkbs.org>
 
 ################################
 #### ---- Environment Vars ----
 ################################
-ARG BLAZEGRAPH_VERSION=2.1.4
-ARG BLAZEGRAPH_PORT=9999
-
-ENV SERVERS_HOME=/usr
-ENV DATA_DIR=/data
-ENV BLAZEGRAPH_HOME=${SERVERS_HOME}/blazegraph
+ARG BLAZEGRAPH_VERSION=${BLAZEGRAPH_VERSION:-2.1.4}
 ENV BLAZEGRAPH_VERSION=${BLAZEGRAPH_VERSION}
+
+ARG BLAZEGRAPH_PORT=${BLAZEGRAPH_PORT:-9999}
 ENV BLAZEGRAPH_PORT=${BLAZEGRAPH_PORT}
+
+ARG BLAZEGRAPH_HOME=${BLAZEGRAPH_HOME:-/usr/blazegraph}
+ENV BLAZEGRAPH_HOME=${BLAZEGRAPH_HOME}
+
+ENV DATA_DIR=/data
 
 ################################
 #### ---- BlazeGraph Server ----
@@ -36,7 +38,7 @@ RUN set -x \
     && mkdir -p ${BLAZEGRAPH_HOME}/config
 
 ################################
-#### ---- Volumn ----
+#### ---- Volume ----
 ################################
 VOLUME ${DATA_DIR}
 
@@ -52,13 +54,13 @@ RUN set -x && \
     wget -c ${BLAZEGRAPH_URL} && \
     ls -al ${BLAZEGRAPH_HOME}/*
 
+################################
+#### ---- Entrypoint & CMD  ----
+################################
 CMD java -server -Xmx4g -jar ${BLAZEGRAPH_HOME}/blazegraph.jar
-#CMD ["java", "-server", "-Xmx4g", "-jar", "${BLAZEGRAPH_HOME}/$(basename $${BLAZEGRAPH_URL})"]
+#CMD ["java", "-server", "-Xmx4g", "-jar", "${BLAZEGRAPH_HOME}/$(basename ${BLAZEGRAPH_URL})"]
 #CMD ["java", "-server", "-Xmx4g", "-jar", "${BLAZEGRAPH_HOME}/blazegraph.jar"]
 
-################################
-#### ---- Entrypoint ----
-################################
 USER ${USER_ID}
 WORKDIR ${DATA_DIR}
 #ENTRYPOINT ["/bin/bash"] 

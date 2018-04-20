@@ -1,35 +1,33 @@
-# BlazeGraph 2.1.4 + Java 8 (1.8.0_141) JRE server + Maven 3.5.0 + Python 3.5.2
-[![](https://imagelayers.io/badge/openkbs/blazegraph:1.0.0.svg)](https://imagelayers.io/?images=openkbs/blazegraph:1.0.0 'Get your own badge on imagelayers.io')
+# BlazeGraph 2.1.4 + Java 8 (1.8.0_172) JDK + Maven 3.5 + Python 3.5
+[![](https://images.microbadger.com/badges/image/openkbs/blazegraph.svg)](https://microbadger.com/images/openkbs/blazegraph "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/version/openkbs/blazegraph.svg)](https://microbadger.com/images/openkbs/blazegraph "Get your own version badge on microbadger.com")
 
 ## Components:
 
-* BlazeGraph 2.1.4 service at http://<server_ip:9999>/
-* Java 8 (1.8.0_141) JRE server + Maven 3.5.0 + Python 3.5.2
+* BlazeGraph 2.1.4 service will be running at http://<server_ip:9999>/
+* java version "1.8.0_172"
+  Java(TM) SE Runtime Environment (build 1.8.0_172-b11)
+  Java HotSpot(TM) 64-Bit Server VM (build 25.172-b11, mixed mode)
+* Apache Maven 3.5.3
+* Python 3.5.2
 * Other tools: git wget unzip vim python python-setuptools python-dev python-numpy 
 
-## Pull the image from Docker Repository
-
-```bash
-docker pull openkbs/blazegraph
+## Run (recommended for easy-start)
+Image is pulling from openkbs/netbeans
+```
+./run.sh
+```
+A successfully starting of BlazeGraph will have the following message displayed (IP address below will be different):
+```
+Welcome to the Blazegraph(tm) Database.
+Go to http://172.17.0.3:9999/blazegraph/ to get started.
+```
+# Build
+You can build your own image locally.
+```
+./build.sh
 ```
 
-## Base the image to build add-on components
-
-```Dockerfile
-FROM openkbs/blazegraph
-```
-
-## Run the image
-
-Then, you're ready to run :
-Make sure you create your work directory, e.g., /data
-
-```bash
-mkdir ./data
-docker run -d --name my-blazegraph -v $PWD/data:/data -i -t openkbs/blazegraph
-```
-
-## Build and Run your own image
+# Build / Run your own image
 
 Say, you will build the image "my/blazegraph".
 
@@ -44,7 +42,7 @@ mkdir ./data
 docker run -d --name some-blazegraph -v $PWD/data:/data -i -t my/blazegraph
 ```
 
-## Shell into the Docker instance
+# Shell into the Docker instance
 ```bash
 docker exec -it some-blazegraph /bin/bash
 ```
