@@ -207,7 +207,7 @@ echo "---------------------------------------------"
 cleanup
 
 set -x
-docker run --rm \
+docker run \
     -d \
     --name=${instanceName} \
     ${privilegedString} \

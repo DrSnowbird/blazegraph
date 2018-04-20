@@ -22,6 +22,7 @@ ENV DATA_DIR=/data
 ## -- ref: https://sourceforge.net/projects/bigdata/files
 ENV BLAZEGRAPH_URL=https://sourceforge.net/projects/bigdata/files/bigdata/${BLAZEGRAPH_VERSION}/blazegraph.jar
 
+
 ## (blazegraph option) -v $PWD/config:/config
 ENV CONFIG_DIR=${BLAZEGRAPH_HOME}/config
 VOLUME ${CONFIG_DIR}
