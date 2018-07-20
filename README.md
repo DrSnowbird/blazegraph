@@ -1,12 +1,12 @@
-# BlazeGraph 2.1.4 + Java 8 (1.8.0_172) JDK + Maven 3.5 + Python 3.5
+# BlazeGraph 2.1.4 + Java 8 (1.8.0_181) JDK + Maven 3.5 + Python 3.5
 [![](https://images.microbadger.com/badges/image/openkbs/blazegraph.svg)](https://microbadger.com/images/openkbs/blazegraph "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/version/openkbs/blazegraph.svg)](https://microbadger.com/images/openkbs/blazegraph "Get your own version badge on microbadger.com")
 
 # Components:
 
 * [BlazeGraph](https://www.blazegraph.com/) 2.1.4 service will be running at http://<server_ip:9999>/
-* java version "1.8.0_172"
-  Java(TM) SE Runtime Environment (build 1.8.0_172-b11)
-  Java HotSpot(TM) 64-Bit Server VM (build 25.172-b11, mixed mode)
+* java version "1.8.0_181"
+  Java(TM) SE Runtime Environment (build 1.8.0_181-b13)
+  Java HotSpot(TM) 64-Bit Server VM (build 25.181-b13, mixed mode)
 * Apache Maven 3.5.3
 * Python 3.5.2
 * Other tools: git wget unzip vim python python-setuptools python-dev python-numpy 
