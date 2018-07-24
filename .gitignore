@@ -1,0 +1,6 @@
+workspace/
+data/
+config/
+.java
+.profile
+data/blazegraph.jnl
