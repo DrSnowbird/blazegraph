@@ -16,7 +16,7 @@ services:
     volumes:
       - $PWD/workspace:/home/developer/workspace
       - $PWD/data:/data 
-      - $PWD/config:/usr/blazegraph/config 
+      - $PWD/conf:/usr/blazegraph/conf 
       - $PWD/.java:/.java 
       - $PWD/.profile:/.profile
 

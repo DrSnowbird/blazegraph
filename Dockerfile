@@ -22,21 +22,19 @@ ENV DATA_DIR=/data
 ## -- ref: https://sourceforge.net/projects/bigdata/files
 ENV BLAZEGRAPH_URL=https://sourceforge.net/projects/bigdata/files/bigdata/${BLAZEGRAPH_VERSION}/blazegraph.jar
 
-
-## (blazegraph option) -v $PWD/config:/config
-ENV CONFIG_DIR=${BLAZEGRAPH_HOME}/config
-VOLUME ${CONFIG_DIR}
-
-## (blazegraph option): -Dbigdata.propertyFile=/etc/blazegraph/RWStore.properties 
-ENV BIGDATA_PROPERTY=${BLAZEGRAPH_HOME}/config/RWStore.properties
-COPY RWStore.properties ${BLAZEGRAPH_HOME}/config/RWStore.properties
-
-## (blazegraph option): -Djetty.overrideWebXml=/path/to/override.xml
-ENV JETTY_OVERRIDEWEBXML=${BLAZEGRAPH_HOME}/config/web.xml
-
 RUN set -x \
     && mkdir -p $BLAZEGRAPH_HOME \
-    && mkdir -p ${BLAZEGRAPH_HOME}/config
+    && mkdir -p ${BLAZEGRAPH_HOME}/conf
+
+## (blazegraph option) -v $PWD/conf:/conf
+ENV conf_DIR=${BLAZEGRAPH_HOME}/conf
+VOLUME ${conf_DIR}
+
+## (blazegraph option): -Dbigdata.propertyFile=/usr/blazegraph/conf/RWStore.properties 
+ENV BIGDATA_PROPERTY=${BLAZEGRAPH_HOME}/conf/RWStore.properties
+
+## (blazegraph option): -Djetty.overrideWebXml=/path/to/override.xml
+#ENV JETTY_OVERRIDEWEBXML=${BLAZEGRAPH_HOME}/conf/web.xml
 
 ################################
 #### ---- Volume ----
@@ -54,11 +52,13 @@ WORKDIR ${BLAZEGRAPH_HOME}
 RUN set -x && \
     wget -c ${BLAZEGRAPH_URL} && \
     ls -al ${BLAZEGRAPH_HOME}/*
+    
+COPY RWStore.properties ${BLAZEGRAPH_HOME}/conf/RWStore.properties
 
 ################################
 #### ---- Entrypoint & CMD  ----
 ################################
-CMD java -server -Xmx4g -jar ${BLAZEGRAPH_HOME}/blazegraph.jar
+CMD java -server -Xmx4g -jar -Dbigdata.propertyFile=${BIGDATA_PROPERTY} ${BLAZEGRAPH_HOME}/blazegraph.jar 
 #CMD ["java", "-server", "-Xmx4g", "-jar", "${BLAZEGRAPH_HOME}/$(basename ${BLAZEGRAPH_URL})"]
 #CMD ["java", "-server", "-Xmx4g", "-jar", "${BLAZEGRAPH_HOME}/blazegraph.jar"]
 
