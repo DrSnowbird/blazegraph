@@ -90,8 +90,7 @@ RUN groupadd -g ${GROUP_ID} ${USER_NAME} && \
 WORKDIR ${HOME}
 USER ${USER_NAME}
 
-CMD java -server -Xmx4g -jar ${BLAZEGRAPH_HOME}/blazegraph.jar
-#CMD java -server -Xmx4g -jar -Dbigdata.propertyFile=${BIGDATA_PROPERTY} ${BLAZEGRAPH_HOME}/blazegraph.jar 
+CMD java -server -Xmx4g -jar -Dbigdata.propertyFile=${BIGDATA_PROPERTY} ${BLAZEGRAPH_HOME}/blazegraph.jar 
 #CMD ["java", "-server", "-Xmx4g", "-jar", "${BLAZEGRAPH_HOME}/$(basename ${BLAZEGRAPH_URL})"]
 #CMD ["java", "-server", "-Xmx4g", "-jar", "${BLAZEGRAPH_HOME}/blazegraph.jar"]
 
