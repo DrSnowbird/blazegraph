@@ -247,6 +247,8 @@ cleanup
 #### run restart options: { no, on-failure, unless-stopped, always }
 RESTART_OPTION=no
 
+privilegedString="--privileged=false"
+
 docker run --rm -d \
     --name=${instanceName} \
     --restart=${RESTART_OPTION} \
