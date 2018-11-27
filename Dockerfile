@@ -23,7 +23,7 @@ ENV DATA_DIR=/data
 ENV BLAZEGRAPH_URL=https://sourceforge.net/projects/bigdata/files/bigdata/${BLAZEGRAPH_VERSION}/blazegraph.jar
 
 RUN set -x \
-    && mkdir -p $BLAZEGRAPH_HOME \
+    && mkdir -p ${BLAZEGRAPH_HOME} \
     && mkdir -p ${BLAZEGRAPH_HOME}/conf
 
 ## (blazegraph option) -v $PWD/conf:/conf
@@ -53,7 +53,7 @@ RUN set -x && \
     wget -c ${BLAZEGRAPH_URL} && \
     ls -al ${BLAZEGRAPH_HOME}/*
     
-COPY RWStore.properties ${BLAZEGRAPH_HOME}/conf/RWStore.properties
+COPY ./RWStore.properties ${BLAZEGRAPH_HOME}/conf/
 
 ################################
 #### ---- Entrypoint & CMD  ----
