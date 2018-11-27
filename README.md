@@ -1,14 +1,18 @@
-# BlazeGraph 2.1.4 + Java 8 (1.8.0_181) JDK + Maven 3.5 + Python 3.5
+# BlazeGraph 2.1.4 + Java 8 (1.8.0_191) JDK + Maven 3.5 + Python 3.5
 [![](https://images.microbadger.com/badges/image/openkbs/blazegraph.svg)](https://microbadger.com/images/openkbs/blazegraph "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/version/openkbs/blazegraph.svg)](https://microbadger.com/images/openkbs/blazegraph "Get your own version badge on microbadger.com")
 
-# Components:
+# License Agreement
+By using this image, you agree the [Oracle Java JDK License](http://www.oracle.com/technetwork/java/javase/terms/license/index.html).
+This image contains [Oracle JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/index.html). You must accept the [Oracle Binary Code License Agreement for Java SE](http://www.oracle.com/technetwork/java/javase/terms/license/index.html) to use this image.
 
+# Components:
 * [BlazeGraph](https://www.blazegraph.com/) 2.1.4 service will be running at http://<server_ip:9999>/
-* java version "1.8.0_181"
-  Java(TM) SE Runtime Environment (build 1.8.0_181-b13)
-  Java HotSpot(TM) 64-Bit Server VM (build 25.181-b13, mixed mode)
+* java version "1.8.0_191"
+  Java(TM) SE Runtime Environment (build 1.8.0_191-b12)
+  Java HotSpot(TM) 64-Bit Server VM (build 25.191-b12, mixed mode)
 * Apache Maven 3.5.3
 * Python 3.5.2
+* Gradle 4.9
 * Other tools: git wget unzip vim python python-setuptools python-dev python-numpy 
 
 # Run (recommended for easy-start)
@@ -112,3 +116,61 @@ it will work the same way as your local installed Java's "javac" and "java" comm
 
 # Reference
 * [BlazeGraph](https://www.blazegraph.com/)
+
+# Releases Information
+```
+JAVA_HOME=/usr/jdk1.8.0_191
+java version "1.8.0_191"
+Java(TM) SE Runtime Environment (build 1.8.0_191-b12)
+Java HotSpot(TM) 64-Bit Server VM (build 25.191-b12, mixed mode)
+Apache Maven 3.5.4 (1edded0938998edf8bf061f1ceb3cfdeccf443fe; 2018-06-17T18:33:14Z)
+Maven home: /usr/apache-maven-3.5.4
+Java version: 1.8.0_191, vendor: Oracle Corporation, runtime: /usr/jdk1.8.0_191/jre
+Default locale: en_US, platform encoding: ANSI_X3.4-1968
+OS name: "linux", version: "4.15.0-39-generic", arch: "amd64", family: "unix"
+Python 3.5.2
+Python 3.5.2
+pip 18.1 from /usr/local/lib/python3.5/dist-packages/pip (python 3.5)
+pip 18.1 from /usr/local/lib/python3.5/dist-packages/pip (python 3.5)
+
+Welcome to Gradle 4.9!
+
+Here are the highlights of this release:
+ - Experimental APIs for creating and configuring tasks lazily
+ - Pass arguments to JavaExec via CLI
+ - Auxiliary publication dependency support for multi-project builds
+ - Improved dependency insight report
+
+For more details see https://docs.gradle.org/4.9/release-notes.html
+
+
+------------------------------------------------------------
+Gradle 4.9
+------------------------------------------------------------
+
+Build time:   2018-07-16 08:14:03 UTC
+Revision:     efcf8c1cf533b03c70f394f270f46a174c738efc
+
+Kotlin DSL:   0.18.4
+Kotlin:       1.2.41
+Groovy:       2.4.12
+Ant:          Apache Ant(TM) version 1.9.11 compiled on March 23 2018
+JVM:          1.8.0_191 (Oracle Corporation 25.191-b12)
+OS:           Linux 4.15.0-39-generic amd64
+
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=16.04
+DISTRIB_CODENAME=xenial
+DISTRIB_DESCRIPTION="Ubuntu 16.04.4 LTS"
+NAME="Ubuntu"
+VERSION="16.04.4 LTS (Xenial Xerus)"
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME="Ubuntu 16.04.4 LTS"
+VERSION_ID="16.04"
+HOME_URL="http://www.ubuntu.com/"
+SUPPORT_URL="http://help.ubuntu.com/"
+BUG_REPORT_URL="http://bugs.launchpad.net/ubuntu/"
+VERSION_CODENAME=xenial
+UBUNTU_CODENAME=xenial
+```
